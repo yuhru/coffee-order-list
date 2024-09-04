@@ -388,13 +388,20 @@
 
             // Add order details
             let yPos = 80;
-            ['coffeeTable', 'decafCoffeeTable', 'upcomingCoffeeTable'].forEach(tableId => {
+            ['regularcoffeeTable', 'decafCoffeeTable', 'upcomingCoffeeTable'].forEach(tableId => {
                 const table = document.getElementById(tableId);
-                doc.text(tableId.replace('Table', ''), 10, yPos);
-                yPos += 10;
-                doc.autoTable({ html: `#${tableId}`, startY: yPos });
-                yPos = doc.lastAutoTable.finalY + 10;
-            });
+                if (table) {
+           		 doc.text(tableId.replace('Table', ' Coffee'), 10, yPos);
+          		 yPos += 10;
+            		 doc.autoTable({ 
+               		 html: `#${tableId}`,
+               		 startY: yPos,
+               		 styles: { fontSize: 8 },
+               		 columnStyles: { 0: { cellWidth: 30 } }
+            		 });
+           		 yPos = doc.lastAutoTable.finalY + 10;
+       		 }
+    		});
 
             // Add grand total
             doc.text(`Grand Total: £${document.getElementById('grandTotal').textContent}`, 10, yPos);
