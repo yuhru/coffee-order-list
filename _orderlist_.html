@@ -49,19 +49,20 @@
 <body>
     <h1>Wholesale Coffee Order List</h1>
 
-    <div class="client-info">
-        <label for="clientName">Name:</label>
-        <input type="text" id="clientName" placeholder="Enter your name">
+    <form action="https://formsubmit.co/ruby.yuhru@gmail.com" method="POST">
+        <div class="client-info">
+            <label for="clientName">Name:</label>
+            <input type="text" id="clientName" name="clientName" placeholder="Enter your name" required>
 
-        <label for="companyName">Company Name:</label>
-        <input type="text" id="companyName" placeholder="Enter your company name">
+            <label for="companyName">Company Name:</label>
+            <input type="text" id="companyName" name="companyName" placeholder="Enter your company name" required>
 
-        <label for="phone">Phone:</label>
-        <input type="tel" id="phone" placeholder="Enter your phone number">
+            <label for="phone">Phone:</label>
+            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
 
-        <label for="address">Address:</label>
-        <input type="text" id="address" placeholder="Enter your address">
-    </div>
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" placeholder="Enter your address" required>
+        </div>
 
     <table id="regularCoffeeTable">
         <tr>
@@ -127,6 +128,15 @@
 
 
     <p class="grand-total">Grand Total: £<span id="grandTotal">0.00</span></p>
+
+        <input type="hidden" name="orderDetails" id="orderDetails">
+
+        <div class="button-container">
+            <button type="button" class="button" onclick="exportToPDF()">Export to PDF</button>
+            <button type="submit" class="button">Submit Order</button>
+        </div>
+    </form>
+
 
     <div class="shipping-info">
         Shipping<br>
@@ -319,10 +329,51 @@
             document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
         }
 
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add client info
+            doc.text("Client Information:", 10, 10);
+            doc.text(`Name: ${document.getElementById('clientName').value}`, 10, 20);
+            doc.text(`Company: ${document.getElementById('companyName').value}`, 10, 30);
+            doc.text(`Phone: ${document.getElementById('phone').value}`, 10, 40);
+            doc.text(`Address: ${document.getElementById('address').value}`, 10, 50);
+
+            // Add order table
+            doc.autoTable({ html: '#coffeeTable', startY: 60 });
+
+            // Add grand total
+            doc.text(`Grand Total: £${document.getElementById('grandTotal').textContent}`, 10, doc.lastAutoTable.finalY + 10);
+
+            // Save the PDF
+            doc.save("coffee_order.pdf");
+        }
+
+
         // Populate both tables
         populateTable(regularItems, 'regularCoffeeTable');
         populateTable(decafItems, 'decafCoffeeTable');
         populateTable(upcomingItems, 'upcomingCoffeeTable');
+
+        // Update hidden input with order details before form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const orderDetails = {
+                clientInfo: {
+                    name: document.getElementById('clientName').value,
+                    company: document.getElementById('companyName').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value
+                },
+                orderItems: Array.from(document.querySelectorAll('#coffeeTable tr:not(:first-child)')).map(row => ({
+                    coffee: row.cells[0].textContent,
+                    total: row.cells[row.cells.length - 1].textContent
+                })),
+                grandTotal: document.getElementById('grandTotal').textContent
+            };
+            document.getElementById('orderDetails').value = JSON.stringify(orderDetails);
+        });
+
     </script>
 </body>
 </html>
