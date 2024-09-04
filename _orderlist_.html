@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wholesale Coffee Order List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .grand-total {
+            text-align: right;
+            font-weight: bold;
+        }
+        h1 {
+            text-align: center; 
+        }
+        .client-info {
+            margin: 20px 0; /* Margin for spacing */
+            text-align: left; /* Align text to the left */
+        }
+        .client-info label {
+            display: block; /* Make labels block elements */
+            margin: 5px 0; /* Spacing between labels */
+        }
+        .client-info input {
+            width: 100%; /* Full width input fields */
+            padding: 8px; /* Padding for input fields */
+            margin-bottom: 10px; /* Space between input fields */
+            border: 1px solid #ccc; /* Border for input fields */
+            border-radius: 4px; /* Rounded corners */
+        }
+        .shipping-info {
+            text-align: left;
+            font-size: 14px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Wholesale Coffee Order List</h1>
+
+    <div class="client-info">
+        <label for="clientName">Name:</label>
+        <input type="text" id="clientName" placeholder="Enter your name">
+
+        <label for="companyName">Company Name:</label>
+        <input type="text" id="companyName" placeholder="Enter your company name">
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" placeholder="Enter your phone number">
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" placeholder="Enter your address">
+    </div>
+
+    <table id="regularCoffeeTable">
+        <tr>
+            <th>Coffee</th>
+            <th>Processing</th>
+            <th>Varieties</th>
+            <th>Country</th>
+            <th>Region</th>
+            <th>Score</th>
+            <th>Flavour Notes</th>
+            <th class="cost-column">1kg Cost</th>
+            <th class="qty-column">1kg Qty</th>
+            <th class="cost-column">200g Cost</th>
+            <th class="qty-column">200g Qty</th>
+            <th class="cost-column">100g Cost</th>
+            <th class="qty-column">100g Qty</th>
+            <th>Total</th>
+        </tr>
+        <!-- Regular coffee items will be added here dynamically -->
+    </table>
+
+    <h2>Decaf Coffee</h2>
+    <table id="decafCoffeeTable">
+        <tr>
+            <th>Coffee</th>
+            <th>Processing</th>
+            <th>Varieties</th>
+            <th>Country</th>
+            <th>Region</th>
+            <th>Score</th>
+            <th>Flavour Notes</th>
+            <th class="cost-column">1kg Cost</th>
+            <th class="qty-column">1kg Qty</th>
+            <th class="cost-column">200g Cost</th>
+            <th class="qty-column">200g Qty</th>
+            <th class="cost-column">100g Cost</th>
+            <th class="qty-column">100g Qty</th>
+            <th>Total</th>
+        </tr>
+        <!-- Decaf coffee items will be added here dynamically -->
+    </table>
+
+    <h2>Upcoming Coffee</h2>
+    <table id="upcomingCoffeeTable">
+        <tr>
+            <th>Coffee</th>
+            <th>Processing</th>
+            <th>Varieties</th>
+            <th>Country</th>
+            <th>Region</th>
+            <th>Score</th>
+            <th>Flavour Notes</th>
+            <th class="cost-column">1kg Cost</th>
+            <th class="qty-column">1kg Qty</th>
+            <th class="cost-column">200g Cost</th>
+            <th class="qty-column">200g Qty</th>
+            <th class="cost-column">100g Cost</th>
+            <th class="qty-column">100g Qty</th>
+            <th>Total</th>
+        </tr>
+        <!-- Upcoming coffee items will be added here dynamically -->
+    </table>
+
+
+    <p class="grand-total">Grand Total: £<span id="grandTotal">0.00</span></p>
+
+    <div class="shipping-info">
+        Shipping<br>
+        UK: Free shipping on orders over £150. For orders under £150, a flat shipping charge of £10.00 will be applied.<br>
+        Dispatch: We ask to place your orders by Friday. We dispatch every Monday morning for next day delivery for UK orders.
+    </div>
+
+    <script>
+        const regularItems = [
+            {
+                coffee: "Fazenda Conquista",
+                processing: "Pulped Natural",
+                varieties: "Field Blend",
+                country: "Brazil",
+                region: "Minas Gerais",
+                score: "84.5",
+                notes: "Hazelnut, Milk Chocolate, Caramel",
+                cost1kg: 21.50,
+                cost200g: 5.40,
+                cost100g: 0.00
+            },
+            {
+                coffee: "Estrela",
+                processing: "Natural",
+                varieties: "Catuai",
+                country: "Brazil",
+                region: "Cerrado Mineiro",
+                score: "88.5",
+                notes: "Tangerine, Dates, Redcurrant, Toffee, Milk chocolate",
+                cost1kg: 21.65,
+                cost200g: 5.35,
+                cost100g: 0.00
+            },
+            {
+                coffee: "Tumba",
+                processing: "Natural",
+                varieties: "Red Bourbon",
+                country: "Rwanda",
+                region: "Rulindo",
+                score: "87",
+                notes: "Raisin, Milk Chocolate, Blackcurrant, Pineapple",
+                cost1kg: 28.70,
+                cost200g: 6.75,
+                cost100g: 0.00
+            },
+            {
+                coffee: "Finca Paraíso 92 P-00",
+                processing: "Anoxic Experimental",
+                varieties: "Castillo",
+                country: "Colombia",
+                region: "Cauca",
+                score: "88",
+                notes: "Strawberry Lollipop, Raspberry, Vanilla, Passionfruit",
+                cost1kg: 29.00,
+                cost200g: 6.90,
+                cost100g: 0.00
+            },
+            {
+                coffee: "Rumudamo",
+                processing: "Natural",
+                varieties: "Wolisho, Dega",
+                country: "Ethiopia",
+                region: "Sidamo",
+                score: "88.5",
+                notes: "Strawberry, Pineapple, Jasmine, Gooseberry, Dark Chocolate",
+                cost1kg: 36.20,
+                cost200g: 8.30,
+                cost100g: 0.00
+            },
+            {
+                coffee: "Kiandu AA",
+                processing: "Washed",
+                varieties: "SL14, SL28",
+                country: "Kenya",
+                region: "Nyeri",
+                score: "87.5",
+                notes: "Lime, Redcurrant, Rhubarb, Orange, Brown Sugar",
+                cost1kg: 37.30,
+                cost200g: 8.50,
+                cost100g: 0.00
+            },
+            {
+                coffee: "Boreta",
+                processing: "Washed",
+                varieties: "Heirloom",
+                country: "Ethiopia",
+                region: "Yirgacheffe",
+                score: "88",
+                notes: "Parma Violet, Jasmine, Nectarine, Clean and Complex",
+                cost1kg: 38.80,
+                cost200g: 8.90,
+                cost100g: 0.00
+            },
+            {
+                coffee: "El Placer- WBC #6",
+                processing: "White Honey",
+                varieties: "Gesha",
+                country: "Colombia",
+                region: "Quindio",
+                score: "90",
+                notes: "Jasmine, Apricot, Yuzu, Green Tea",
+                cost1kg: 120,
+                cost200g: 25,
+                cost100g: 13.50
+            }
+        ];
+
+        const decafItems = [
+            {
+                coffee: "Finca Paraíso 92",
+                processing: "Special Process - Ethyl Acetate",
+                varieties: "Red Bourbon",
+                country: "Colombia",
+                region: "Cauca",
+                score: "86.5",
+                notes: "Apricot, Passionfruit, Strawberry Candy",
+                cost1kg: 36.50,
+                cost200g: 8.30,
+                cost100g: 0.00
+            }
+        ];
+
+        const upcomingItems = [
+            {
+                coffee: "Mooleh Manay Excelsa",
+                processing: "Yeast inoculated natural",
+                varieties: "Excelsa",
+                country: "India",
+                region: "Karnataka",
+                score: "N/A",
+                notes: "This coffee shares the confectionary sweetness found in Colombian Eugenioides, but this is also complemented by structured acidity. A rare coffee species.",
+                cost1kg: 55.00,
+                cost200g: 0.00,
+                cost100g: 7.00
+            },
+            {
+                coffee: "Mooleh Manay Arabica",
+                processing: "Yeast inoculated natural",
+                varieties: "Chandragiri, SLN 6",
+                country: "India",
+                region: "Karnataka",
+                score: "86",
+                notes: "Sweet Lemon, Nectarine, Green Apple, Honeysuckle, Star Anise",
+                cost1kg: 28.90,
+                cost200g: 6.75,
+                cost100g: 0.00
+            }
+        ];
+
+
+        function populateTable(items, tableId) {
+            const table = document.getElementById(tableId);
+
+            items.forEach(item => {
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td>${item.coffee}</td>
+                    <td>${item.processing}</td>
+                    <td>${item.varieties}</td>
+                    <td>${item.country}</td>
+                    <td>${item.region}</td>
+                    <td>${item.score}</td>
+                    <td>${item.notes}</td>
+                    <td class="cost-column">${item.cost1kg > 0 ? '£' + item.cost1kg.toFixed(2) : ''}</td>
+                    <td class="qty-column">${item.cost1kg > 0 ? '<input type="number" min="0" value="0" onchange="updateTotal(this, ' + item.cost1kg + ')">' : ''}</td>
+                    <td class="cost-column">${item.cost200g > 0 ? '£' + item.cost200g.toFixed(2) : ''}</td>
+                    <td class="qty-column">${item.cost200g > 0 ? '<input type="number" min="0" value="0" onchange="updateTotal(this, ' + item.cost200g + ')">' : ''}</td>
+                    <td class="cost-column">${item.cost100g > 0 ? '£' + item.cost100g.toFixed(2) : ''}</td>
+                    <td class="qty-column">${item.cost100g > 0 ? '<input type="number" min="0" value="0" onchange="updateTotal(this, ' + item.cost100g + ')">' : ''}</td>
+                    <td>£0.00</td>
+                `;
+            });
+        }
+
+        function updateTotal(input, costPerUnit) {
+            const row = input.parentNode.parentNode;
+            const quantity = parseInt(input.value);
+            const total = costPerUnit * quantity;
+            row.cells[row.cells.length - 1].textContent = `£${total.toFixed(2)}`;
+
+            updateGrandTotal();
+        }
+
+        function updateGrandTotal() {
+            let grandTotal = 0;
+            const totalCells = document.querySelectorAll('tr td:last-child');
+            totalCells.forEach(cell => {
+                grandTotal += parseFloat(cell.textContent.slice(1));
+            });
+            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
+        }
+
+        // Populate both tables
+        populateTable(regularItems, 'regularCoffeeTable');
+        populateTable(decafItems, 'decafCoffeeTable');
+        populateTable(upcomingItems, 'upcomingCoffeeTable');
+    </script>
+</body>
+</html>
