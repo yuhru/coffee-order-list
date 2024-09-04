@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wholesale Coffee Order List</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid black;
@@ -20,51 +21,95 @@
         }
         .grand-total {
             text-align: right;
+            margin: 8px;
             font-weight: bold;
         }
         h1 {
             text-align: center; 
         }
+
         .client-info {
-            margin: 20px 0; /* Margin for spacing */
-            text-align: left; /* Align text to the left */
+            width: calc(100% - 100px);
+            margin: 20px auto;
+            text-align: left;
+        }
+        .client-info .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .client-info .field {
+            width: 48%;
         }
         .client-info label {
-            display: block; /* Make labels block elements */
-            margin: 5px 0; /* Spacing between labels */
+            display: block;
+            margin: 5px 0;
         }
         .client-info input {
-            width: 100%; /* Full width input fields */
-            padding: 8px; /* Padding for input fields */
-            margin-bottom: 10px; /* Space between input fields */
-            border: 1px solid #ccc; /* Border for input fields */
-            border-radius: 4px; /* Rounded corners */
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .footer-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 20px;
         }
         .shipping-info {
+            width: 60%;
             text-align: left;
-            font-size: 14px; 
+            font-size: 14px;
         }
+        .button-container {
+            text-align: right;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
     </style>
 </head>
 <body>
     <h1>Wholesale Coffee Order List</h1>
 
-    <form action="https://formsubmit.co/ruby.yuhru@gmail.com" method="POST">
+    <form id="orderForm" action="https://formsubmit.co/ruby.yuhru@gmail.com" method="POST">
         <div class="client-info">
-            <label for="clientName">Name:</label>
-            <input type="text" id="clientName" name="clientName" placeholder="Enter your name" required>
+            <div class="row">
+                <div class="field">
 
-            <label for="companyName">Company Name:</label>
-            <input type="text" id="companyName" name="companyName" placeholder="Enter your company name" required>
+                <input type="text" id="clientName" name="Client Name" placeholder="Full Name" required>
+                </div>
+                <div class="field">
 
-            <label for="phone">Phone:</label>
-            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                  <input type="text" id="companyName" name="Company Name" placeholder="Company Name" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="field">
 
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address" placeholder="Enter your address" required>
+                    <input type="tel" id="phone" name="Phone" placeholder="Phone Number" required>
+                </div>
+                <div class="field">
+
+                    <input type="email" name="Email" placeholder="Email Address">
+                </div>
+            </div>
+            <div class="row">
+                <div class="field" style="width: 100%;">
+
+                    <input type="text" id="address" name="address" placeholder="Shipping Address" required>
+                </div>
+            </div>
         </div>
 
-    <table id="regularCoffeeTable">
+<table id="regularCoffeeTable">
         <tr>
             <th>Coffee</th>
             <th>Processing</th>
@@ -126,23 +171,22 @@
         <!-- Upcoming coffee items will be added here dynamically -->
     </table>
 
-
-    <p class="grand-total">Grand Total: £<span id="grandTotal">0.00</span></p>
+        <p class="grand-total">Grand Total: £<span id="grandTotal">0.00</span></p>
 
         <input type="hidden" name="orderDetails" id="orderDetails">
 
+<div class="footer-container">
+        <div class="shipping-info">
+            Shipping<br>
+            UK: Free shipping on orders over £150. For orders under £150, a flat shipping charge of £10.00 will be applied.<br>
+            Dispatch: We ask to place your orders by Friday. We dispatch every Monday morning for next day delivery for UK orders.
+        </div>
         <div class="button-container">
             <button type="button" class="button" onclick="exportToPDF()">Export to PDF</button>
             <button type="submit" class="button">Submit Order</button>
         </div>
-    </form>
-
-
-    <div class="shipping-info">
-        Shipping<br>
-        UK: Free shipping on orders over £150. For orders under £150, a flat shipping charge of £10.00 will be applied.<br>
-        Dispatch: We ask to place your orders by Friday. We dispatch every Monday morning for next day delivery for UK orders.
     </div>
+  </form>
 
     <script>
         const regularItems = [
@@ -242,9 +286,10 @@
                 cost200g: 25,
                 cost100g: 13.50
             }
+
         ];
 
-        const decafItems = [
+        const decafCoffeeItems = [
             {
                 coffee: "Finca Paraíso 92",
                 processing: "Special Process - Ethyl Acetate",
@@ -257,9 +302,10 @@
                 cost200g: 8.30,
                 cost100g: 0.00
             }
+
         ];
 
-        const upcomingItems = [
+        const upcomingCoffeeItems = [
             {
                 coffee: "Mooleh Manay Excelsa",
                 processing: "Yeast inoculated natural",
@@ -286,10 +332,8 @@
             }
         ];
 
-
         function populateTable(items, tableId) {
             const table = document.getElementById(tableId);
-
             items.forEach(item => {
                 const row = table.insertRow();
                 row.innerHTML = `
@@ -316,15 +360,16 @@
             const quantity = parseInt(input.value);
             const total = costPerUnit * quantity;
             row.cells[row.cells.length - 1].textContent = `£${total.toFixed(2)}`;
-
             updateGrandTotal();
         }
 
         function updateGrandTotal() {
             let grandTotal = 0;
-            const totalCells = document.querySelectorAll('tr td:last-child');
+            const totalCells = document.querySelectorAll('table tr td:last-child');
             totalCells.forEach(cell => {
-                grandTotal += parseFloat(cell.textContent.slice(1));
+                if (cell.textContent !== "Total") {
+                    grandTotal += parseFloat(cell.textContent.slice(1) || 0);
+                }
             });
             document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
         }
@@ -338,34 +383,50 @@
             doc.text(`Name: ${document.getElementById('clientName').value}`, 10, 20);
             doc.text(`Company: ${document.getElementById('companyName').value}`, 10, 30);
             doc.text(`Phone: ${document.getElementById('phone').value}`, 10, 40);
-            doc.text(`Address: ${document.getElementById('address').value}`, 10, 50);
+            doc.text(`Email: ${document.getElementById('email').value}`, 10, 50);
+            doc.text(`Address: ${document.getElementById('address').value}`, 10, 60);
 
-            // Add order table
-            doc.autoTable({ html: '#coffeeTable', startY: 60 });
+            // Add order details
+            let yPos = 80;
+            ['coffeeTable', 'decafCoffeeTable', 'upcomingCoffeeTable'].forEach(tableId => {
+                const table = document.getElementById(tableId);
+                doc.text(tableId.replace('Table', ''), 10, yPos);
+                yPos += 10;
+                doc.autoTable({ html: `#${tableId}`, startY: yPos });
+                yPos = doc.lastAutoTable.finalY + 10;
+            });
 
             // Add grand total
-            doc.text(`Grand Total: £${document.getElementById('grandTotal').textContent}`, 10, doc.lastAutoTable.finalY + 10);
+            doc.text(`Grand Total: £${document.getElementById('grandTotal').textContent}`, 10, yPos);
 
             // Save the PDF
             doc.save("coffee_order.pdf");
         }
 
-
-        // Populate both tables
+        // Populate tables
         populateTable(regularItems, 'regularCoffeeTable');
-        populateTable(decafItems, 'decafCoffeeTable');
-        populateTable(upcomingItems, 'upcomingCoffeeTable');
+        populateTable(decafCoffeeItems, 'decafCoffeeTable');
+        populateTable(upcomingCoffeeItems, 'upcomingCoffeeTable');
 
         // Update hidden input with order details before form submission
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
             const orderDetails = {
                 clientInfo: {
                     name: document.getElementById('clientName').value,
                     company: document.getElementById('companyName').value,
                     phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
                     address: document.getElementById('address').value
                 },
-                orderItems: Array.from(document.querySelectorAll('#coffeeTable tr:not(:first-child)')).map(row => ({
+                coffeeOrders: Array.from(document.querySelectorAll('#coffeeTable tr:not(:first-child)')).map(row => ({
+                    coffee: row.cells[0].textContent,
+                    total: row.cells[row.cells.length - 1].textContent
+                })),
+                decafOrders: Array.from(document.querySelectorAll('#decafCoffeeTable tr:not(:first-child)')).map(row => ({
+                    coffee: row.cells[0].textContent,
+                    total: row.cells[row.cells.length - 1].textContent
+                })),
+                upcomingOrders: Array.from(document.querySelectorAll('#upcomingCoffeeTable tr:not(:first-child)')).map(row => ({
                     coffee: row.cells[0].textContent,
                     total: row.cells[row.cells.length - 1].textContent
                 })),
@@ -373,7 +434,6 @@
             };
             document.getElementById('orderDetails').value = JSON.stringify(orderDetails);
         });
-
     </script>
 </body>
 </html>
