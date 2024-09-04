@@ -425,7 +425,7 @@
                     email: document.getElementById('email').value,
                     address: document.getElementById('address').value
                 },
-                coffeeOrders: Array.from(document.querySelectorAll('#coffeeTable tr:not(:first-child)')).map(row => ({
+                coffeeOrders: Array.from(document.querySelectorAll('#regularcoffeeTable tr:not(:first-child)')).map(row => ({
                     coffee: row.cells[0].textContent,
                     total: row.cells[row.cells.length - 1].textContent
                 })),
